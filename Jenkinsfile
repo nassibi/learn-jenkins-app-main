@@ -11,13 +11,18 @@ pipeline {
             }
             steps {
                 script {
-                    // Create a custom npm cache directory inside the Jenkins workspace
+                    // Create a custom npm cache directory inside the workspace
                     sh '''
                         # Create a custom npm cache directory inside the workspace to avoid permission issues
                         mkdir -p /var/lib/jenkins/workspace/learn-jenkins-app-main/.npm
+
+                        # Set npm to use this directory for its cache
                         npm config set cache /var/lib/jenkins/workspace/learn-jenkins-app-main/.npm --global
 
-                        # Fix permissions of the custom npm cache directory (since the container runs as root)
+                        # Optionally, set a custom directory for npm's user config (to avoid global directories)
+                        npm config set prefix /var/lib/jenkins/workspace/learn-jenkins-app-main/npm-global --global
+
+                        # Ensure the custom cache directory is writable
                         chown -R node:node /var/lib/jenkins/workspace/learn-jenkins-app-main/.npm
                     '''
                 }
