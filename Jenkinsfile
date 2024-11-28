@@ -8,8 +8,8 @@ pipeline {
             steps {
                 script {
                     // Fix the ownership of npm cache directory inside the container
-                    sh 'sudo chown -R 979:977 /.npm'
-                    sh 'sudo chown -R $(whoami):$(whoami) /.npm'
+                    sh 'chown -R 979:977 /.npm'
+                    sh 'chown -R $(whoami):$(whoami) /.npm'
                 }
             }
         }
