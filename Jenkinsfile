@@ -11,27 +11,29 @@ pipeline {
             }
             steps {
                 script {
-                    // Fix the ownership of npm cache directory inside the container
+                    // Create a custom npm cache directory inside the Jenkins workspace
                     sh '''
-                        # Fix ownership of the npm cache directory to avoid EACCES issues
-                        sudo chown -R $(whoami):$(whoami) /.npm
-                        # Alternatively, use a custom cache directory
+                        # Create a custom npm cache directory inside the workspace to avoid permission issues
+                        mkdir -p /var/lib/jenkins/workspace/learn-jenkins-app-main/.npm
                         npm config set cache /var/lib/jenkins/workspace/learn-jenkins-app-main/.npm --global
+
+                        # Fix permissions of the custom npm cache directory (since the container runs as root)
+                        chown -R node:node /var/lib/jenkins/workspace/learn-jenkins-app-main/.npm
                     '''
                 }
                 sh '''
-                    # Print the file listing and check versions
+                    # Print file listings to confirm everything is correct
                     ls -la
                     node --version
                     npm --version
 
-                    # Run npm install with the clean state
+                    # Install dependencies with npm ci
                     npm ci
 
-                    # Run the build process (ensure it runs successfully)
+                    # Run the build process
                     npm run build
 
-                    # Print file listing after the build
+                    # Print file listings after the build
                     ls -la
                 '''
             }
